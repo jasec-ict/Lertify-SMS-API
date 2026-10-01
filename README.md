@@ -1,4 +1,4 @@
-```markdown
+
 # Lertify SMS Python Client
 ## Lertify-SMS-API
 A Python client library for interacting with the Lertify SMS API. Easily send immediate SMS messages, schedule deliveries, send Unicode content, track prices, and handle API errors cleanly.
@@ -13,23 +13,15 @@ Read more: https://lertify.com
   - [Lertify-SMS-API](#lertify-sms-api)
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
-  - [(back to top)](#back-to-top)
   - [Authentication \& Setup](#authentication--setup)
-  - [(back to top)](#back-to-top-1)
   - [Usage Examples](#usage-examples)
     - [Send Immediately](#send-immediately)
-  - [(back to top)](#back-to-top-2)
     - [Send to Multiple Numbers](#send-to-multiple-numbers)
     - [Unicode Support](#unicode-support)
-  - [(back to top)](#back-to-top-3)
     - [Delivery Reports \& Price Reporting](#delivery-reports--price-reporting)
-  - [(back to top)](#back-to-top-4)
     - [Scheduling Messages](#scheduling-messages)
-  - [(back to top)](#back-to-top-5)
   - [Error Handling](#error-handling)
-  - [(back to top)](#back-to-top-6)
   - [Complete Application Example](#complete-application-example)
-  - [(back to top)](#back-to-top-7)
   - [Contributing](#contributing)
     - [Top contributors:](#top-contributors)
   - [License](#license)
