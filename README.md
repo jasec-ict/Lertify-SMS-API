@@ -1,3 +1,4 @@
+```markdown
 # Lertify SMS Python Client
 ## Lertify-SMS-API
 A Python client library for interacting with the Lertify SMS API. Easily send immediate SMS messages, schedule deliveries, send Unicode content, track prices, and handle API errors cleanly.
@@ -43,9 +44,8 @@ Install the library using `pip`:
 
 ```bash
 pip install requests
+
 ```
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
----
 
 ## Authentication & Setup
 
@@ -53,18 +53,23 @@ Import the module:
 
 ```python
 from lertify_sms import LertifySMSClient
+
 ```
 
 The API key should preferably be stored in an environment variable:
 
 **Linux / macOS:**
+
 ```bash
 export LERTIFY_API_KEY="YOUR_API_KEY"
+
 ```
 
 **Windows PowerShell:**
+
 ```powershell
 $env:LERTIFY_API_KEY="YOUR_API_KEY"
+
 ```
 
 Then load it in Python:
@@ -76,53 +81,45 @@ from lertify_sms import LertifySMSClient
 client = LertifySMSClient(
     api_key=os.environ["LERTIFY_API_KEY"]
 )
+
 ```
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
----
 
 ## Usage Examples
 
 ### Send Immediately
 
-The sender parameter accepts both custom sender names (e.g., `"Lertify01"`) and phone numbers (e.g., `"+38640123456"`).
+The sender parameter accepts both custom sender names (e.g., `"Lertify01"`) and phone numbers (e.g., `"+38640123456"`). Omitting `scheduled_time` automatically sends the message immediately.
 
 **Using a sender name:**
+
 ```python
-response = client.send_immediately(
+response = client.send_sms(
     sender="Lertify01",
     destinations="+38640123456",
     content="Hello from Python!",
 )
 print(response)
+
 ```
 
 **Using a sender phone number:**
+
 ```python
-response = client.send_immediately(
+response = client.send_sms(
     sender="+38640123456",
     destinations="+38640987654",
     content="Hello from a phone-number sender!",
 )
 print(response)
-```
 
-**Using `send_to_one()`:**
-```python
-response = client.send_to_one(
-    sender="Lertify01",
-    destination="+38640123456",
-    content="This message is sent immediately.",
-)
-print(response)
 ```
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
----
 
 ### Send to Multiple Numbers
 
 Pass a list or tuple of phone numbers to send to multiple recipients simultaneously.
 
 **Using a list:**
+
 ```python
 recipients = [
     "+38640123456",
@@ -130,25 +127,13 @@ recipients = [
     "+38641111222",
 ]
 
-response = client.send_immediately(
+response = client.send_sms(
     sender="Lertify01",
     destinations=recipients,
     content="This SMS is sent to multiple recipients.",
 )
 print(response)
-```
 
-**Using a tuple with `send_sms()`:**
-```python
-response = client.send_sms(
-    sender="+38640123456",
-    destinations=(
-        "+38640123456",
-        "+38640987654",
-    ),
-    content="Message sent to a tuple of recipients.",
-)
-print(response)
 ```
 
 ---
@@ -158,15 +143,17 @@ print(response)
 Unicode characters are detected automatically:
 
 ```python
-response = client.send_immediately(
+response = client.send_sms(
     sender="Lertify01",
     destinations="+38640123456",
     content="To je testno sporočilo čšž.",
 )
 print(response)
+
 ```
 
 Generated payload automatically sets `isUnicode`:
+
 ```json
 {
   "message": {
@@ -174,9 +161,11 @@ Generated payload automatically sets `isUnicode`:
     "isUnicode": true
   }
 }
+
 ```
 
 You can also manually override the encoding:
+
 ```python
 response = client.send_sms(
     sender="Lertify01",
@@ -185,27 +174,30 @@ response = client.send_sms(
     is_unicode=True,
 )
 print(response)
+
 ```
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
----
 
 ### Delivery Reports & Price Reporting
 
 **Delivery Report URL:**
+
 ```python
-response = client.send_immediately(
+response = client.send_sms(
     sender="Lertify01",
     destinations="+38640123456",
     content="Please send a delivery report.",
-    delivery_report_url="https://example.com/api/delivery-report",
+    delivery_report_url="[https://example.com/api/delivery-report](https://example.com/api/delivery-report)",
 )
 print(response)
+
 ```
+
 *Note: The URL must be publicly accessible and return an HTTP 2xx response.*
 
 **Enable Price Reporting:**
+
 ```python
-response = client.send_immediately(
+response = client.send_sms(
     sender="Lertify01",
     destinations=[
         "+38640123456",
@@ -215,71 +207,66 @@ response = client.send_immediately(
     price_report=True,
 )
 print(response)
+
 ```
+
 *Note: Price information is not returned immediately; it may be included later in the delivery webhook.*
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
----
 
 ### Scheduling Messages
 
-Setting `scheduled_time=None` sends the message immediately (omits `scheduledTime` from the API request):
-
-```python
-response = client.send_sms(
-    sender="Lertify01",
-    destinations="+38640123456",
-    content="This is sent immediately.",
-    scheduled_time=None,
-)
-print(response)
-```
-
-To schedule for a future time, supply a Unix timestamp or `datetime` object:
+To schedule for a future time, you can directly supply a Unix timestamp or `datetime` object to the `scheduled_time` parameter of `send_sms`.
 
 **Using a Unix timestamp (`time.time()`):**
+
 ```python
 import time
 
 scheduled_time = int(time.time()) + 3600  # 1 hour from now
 
-response = client.send_at(
+response = client.send_sms(
     sender="Lertify01",
     destinations="+38640123456",
     content="This SMS is scheduled for one hour from now.",
     scheduled_time=scheduled_time,
 )
 print(response)
+
 ```
 
 **Using the client timestamp helper:**
+
 ```python
-scheduled_time = client.get_unix_timestamp() + 1800  # 30 minutes from now
+scheduled_time = client.get_unix_timestamp() + (15 * 60)  # 15 minutes from now
 
 response = client.send_sms(
     sender="Lertify01",
     destinations="+38640123456",
-    content="Scheduled for 30 minutes from now.",
+    content="Scheduled for 15 minutes from now.",
     scheduled_time=scheduled_time,
 )
 print(response)
+
 ```
 
 **Using `datetime` objects:**
+
 ```python
 from datetime import datetime, timedelta, timezone
 
 scheduled_at = datetime.now(timezone.utc) + timedelta(hours=2)
 
-response = client.send_at_datetime(
+response = client.send_sms(
     sender="Lertify01",
     destinations="+38640123456",
     content="Scheduled using a datetime object.",
-    scheduled_at=scheduled_at,
+    scheduled_time=scheduled_at,
 )
 print(response)
+
 ```
 
 **Using a specific UTC target time:**
+
 ```python
 from datetime import datetime, timezone
 
@@ -288,30 +275,15 @@ scheduled_at = datetime(
     tzinfo=timezone.utc,
 )
 
-response = client.send_at_datetime(
+response = client.send_sms(
     sender="+38640123456",
     destinations="+38640987654",
     content="Scheduled for a specific UTC time.",
-    scheduled_at=scheduled_at,
+    scheduled_time=scheduled_at,
 )
 print(response)
-```
 
-**Scheduling in relative minutes:**
-```python
-response = client.send_in_minutes(
-    sender="Lertify01",
-    destinations=[
-        "+38640123456",
-        "+38640987654",
-    ],
-    content="This SMS will be sent in 15 minutes.",
-    minutes=15,
-)
-print(response)
 ```
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
----
 
 ## Error Handling
 
@@ -340,9 +312,8 @@ except LertifyAPIError as exc:
     print("Lertify API error:", exc)
     print("HTTP status:", exc.status_code)
     print("Response data:", exc.response_data)
+
 ```
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
----
 
 ## Complete Application Example
 
@@ -370,11 +341,11 @@ def main() -> None:
     scheduled_at = datetime.now(timezone.utc) + timedelta(minutes=10)
 
     try:
-        response = client.send_at_datetime(
+        response = client.send_sms(
             sender="+38640123456",
             destinations=recipients,
             content="Scheduled message from the Lertify Python client.",
-            scheduled_at=scheduled_at,
+            scheduled_time=scheduled_at,
             price_report=True,
         )
 
@@ -399,11 +370,9 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-```
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
----
 
-<!-- CONTRIBUTING -->
+```
+
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -419,15 +388,6 @@ Don't forget to give the project a star! Thanks again!
 
 ### Top contributors:
 
-<a href="https://github.com/jasec-ict/Lertify-SMS-API/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=jasec-ict/Lertify-SMS-API" alt="contrib.rocks image" />
-</a>
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- LICENSE -->
 ## License
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>

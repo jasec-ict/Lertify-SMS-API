@@ -170,7 +170,7 @@ class LertifySMSClient:
         content: str,
         is_unicode: Optional[bool] = None,
         delivery_report_url: Optional[str] = None,
-        scheduled_time: Optional[int] = None,
+        scheduled_time: Optional[Union[int, datetime]] = None,
         price_report: bool = False,
     ) -> Dict[str, Any]:
         """
@@ -206,7 +206,7 @@ class LertifySMSClient:
                 Optional public webhook URL for delivery reports.
 
             scheduled_time:
-                Unix timestamp in seconds.
+                Unix timestamp in seconds or a datetime object.
 
                 If None:
                     The message is sent immediately.
@@ -237,6 +237,8 @@ class LertifySMSClient:
             raise ValueError("is_unicode must be True, False, or None")
 
         if scheduled_time is not None:
+            if isinstance(scheduled_time, datetime):
+                scheduled_time = self.datetime_to_unix_timestamp(scheduled_time)
             self._validate_scheduled_time(scheduled_time)
 
         payload: Dict[str, Any] = {
@@ -260,7 +262,6 @@ class LertifySMSClient:
 
             payload["deliveryReportUrl"] = delivery_report_url
 
-        # This field is intentionally omitted when scheduled_time is None.
         if scheduled_time is not None:
             payload["scheduledTime"] = scheduled_time
 
@@ -284,134 +285,6 @@ class LertifySMSClient:
 
         return self._handle_response(response)
 
-    def send_to_one(
-        self,
-        *,
-        sender: str,
-        destination: str,
-        content: str,
-        is_unicode: Optional[bool] = None,
-        delivery_report_url: Optional[str] = None,
-        scheduled_time: Optional[int] = None,
-        price_report: bool = False,
-    ) -> Dict[str, Any]:
-        """
-        Convenience method for sending an SMS to one recipient.
-        """
-        return self.send_sms(
-            sender=sender,
-            destinations=[destination],
-            content=content,
-            is_unicode=is_unicode,
-            delivery_report_url=delivery_report_url,
-            scheduled_time=scheduled_time,
-            price_report=price_report,
-        )
-
-    def send_immediately(
-        self,
-        *,
-        sender: str,
-        destinations: Union[str, Iterable[str]],
-        content: str,
-        is_unicode: Optional[bool] = None,
-        delivery_report_url: Optional[str] = None,
-        price_report: bool = False,
-    ) -> Dict[str, Any]:
-        """
-        Send an SMS immediately.
-
-        This method explicitly uses scheduled_time=None.
-        """
-        return self.send_sms(
-            sender=sender,
-            destinations=destinations,
-            content=content,
-            is_unicode=is_unicode,
-            delivery_report_url=delivery_report_url,
-            scheduled_time=None,
-            price_report=price_report,
-        )
-
-    def send_at(
-        self,
-        *,
-        sender: str,
-        destinations: Union[str, Iterable[str]],
-        content: str,
-        scheduled_time: int,
-        is_unicode: Optional[bool] = None,
-        delivery_report_url: Optional[str] = None,
-        price_report: bool = False,
-    ) -> Dict[str, Any]:
-        """
-        Schedule an SMS using a manually supplied Unix timestamp.
-        """
-        return self.send_sms(
-            sender=sender,
-            destinations=destinations,
-            content=content,
-            is_unicode=is_unicode,
-            delivery_report_url=delivery_report_url,
-            scheduled_time=scheduled_time,
-            price_report=price_report,
-        )
-
-    def send_at_datetime(
-        self,
-        *,
-        sender: str,
-        destinations: Union[str, Iterable[str]],
-        content: str,
-        scheduled_at: datetime,
-        is_unicode: Optional[bool] = None,
-        delivery_report_url: Optional[str] = None,
-        price_report: bool = False,
-    ) -> Dict[str, Any]:
-        """
-        Schedule an SMS using a Python datetime object.
-        """
-        scheduled_time = self.datetime_to_unix_timestamp(scheduled_at)
-
-        return self.send_sms(
-            sender=sender,
-            destinations=destinations,
-            content=content,
-            is_unicode=is_unicode,
-            delivery_report_url=delivery_report_url,
-            scheduled_time=scheduled_time,
-            price_report=price_report,
-        )
-
-    def send_in_minutes(
-        self,
-        *,
-        sender: str,
-        destinations: Union[str, Iterable[str]],
-        content: str,
-        minutes: int,
-        is_unicode: Optional[bool] = None,
-        delivery_report_url: Optional[str] = None,
-        price_report: bool = False,
-    ) -> Dict[str, Any]:
-        """
-        Schedule an SMS a specified number of minutes from now.
-        """
-        if minutes < 0:
-            raise ValueError("minutes must not be negative")
-
-        scheduled_time = self.get_unix_timestamp() + (minutes * 60)
-
-        return self.send_sms(
-            sender=sender,
-            destinations=destinations,
-            content=content,
-            is_unicode=is_unicode,
-            delivery_report_url=delivery_report_url,
-            scheduled_time=scheduled_time,
-            price_report=price_report,
-        )
-
     @classmethod
     def _validate_sender(cls, sender: str) -> None:
         """
@@ -427,11 +300,9 @@ class LertifySMSClient:
 
         sender = sender.strip()
 
-        # A sender can be an international phone number.
         if cls.E164_PATTERN.fullmatch(sender):
             return
 
-        # Or it can be an alphanumeric sender name.
         if cls.SENDER_NAME_PATTERN.fullmatch(sender):
             return
 
