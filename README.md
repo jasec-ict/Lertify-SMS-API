@@ -379,6 +379,11 @@ Don't forget to give the project a star! Thanks again!
 5. Open a Pull Request
 
 ### Top contributors:
+<a href="https://github.com/jasec-ict/Lertify-SMS-API/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=jasec-ict/Lertify-SMS-API" alt="contrib.rocks image" />
+</a>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## License
 
