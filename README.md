@@ -6,11 +6,13 @@ A Python client library for interacting with the Lertify SMS API. Easily send im
 Python client for the Lertify SMS API for https://lertify.app
 Read more: https://lertify.com
 
+Created by [Jasec](https://jasec.si/)
 ---
 
 ## Table of Contents
 - [Lertify SMS Python Client](#lertify-sms-python-client)
   - [Lertify-SMS-API](#lertify-sms-api)
+  - [Created by Jasec](#created-by-jasec)
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
   - [Authentication \& Setup](#authentication--setup)
