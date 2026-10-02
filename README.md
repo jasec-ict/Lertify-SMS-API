@@ -140,7 +140,7 @@ Unicode characters are detected automatically:
 response = client.send_sms(
     sender="Lertify01",
     destinations="+38640123456",
-    content="To je testno sporočilo čšž.",
+    content="This is unicode message čšž.",
 )
 print(response)
 
@@ -151,7 +151,7 @@ Generated payload automatically sets `isUnicode`:
 ```json
 {
   "message": {
-    "content": "To je testno sporočilo čšž.",
+    "content": "This is unicode message čšž.",
     "isUnicode": true
   }
 }
