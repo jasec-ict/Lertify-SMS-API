@@ -180,7 +180,7 @@ response = client.send_sms(
     sender="Lertify01",
     destinations="+38640123456",
     content="Please send a delivery report.",
-    delivery_report_url="[https://example.com/api/delivery-report](https://example.com/api/delivery-report)",
+    delivery_report_url="https://example.com/api/delivery-report",
 )
 print(response)
 
